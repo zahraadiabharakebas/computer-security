@@ -10,7 +10,7 @@
                     <a href="{{route('doctor.index')}}"><i class="fa fa-user-md"></i> <span>Doctors</span></a>
                 </li>
                 <li>
-                    <a href="patients.html"><i class="fa fa-wheelchair"></i> <span>Patients</span></a>
+                    <a href="{{route('patient.index')}}"><i class="fa fa-wheelchair"></i> <span>Patients</span></a>
                 </li>
                 <li>
                     <a href="appointments.html"><i class="fa fa-calendar"></i> <span>Appointments</span></a>

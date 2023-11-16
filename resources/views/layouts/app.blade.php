@@ -14,6 +14,11 @@
     <link rel="stylesheet" type="text/css" href="{{asset('assets/css/bootstrap-datetimepicker.min.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('assets/css/select2.min.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('assets/css/custom.css')}}">
+    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/select2.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
 
     <!--[if lt IE 9]>
     <script src="{{asset('assets/js/html5shiv.min.js')}}"></script>
