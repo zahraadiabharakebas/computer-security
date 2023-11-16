@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->string('image')->nullable();
             $table->string('certificate')->nullable();
+            $table->date('date_birth')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

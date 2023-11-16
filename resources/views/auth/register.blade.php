@@ -57,15 +57,18 @@
                         <label>Repeat Password</label>
                         <input  id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
                     </div>
-{{--                    <div class="form-group">--}}
-{{--                        <label>Mobile Number</label>--}}
-{{--                        <input type="text" class="form-control @error('telephone') is-invalid @enderror" name="telephone" value="{{ old('email') }}" required autocomplete="email">--}}
-{{--                    </div>--}}
-{{--                    <div class="form-group checkbox">--}}
-{{--                        <label>--}}
-{{--                            <input type="checkbox"> I have read and agree the Terms & Conditions--}}
-{{--                        </label>--}}
-{{--                    </div>--}}
+                    <div class="form-group">
+                        <label>Mobile Number</label>
+                        <input type="text" class="form-control @error('telephone') is-invalid @enderror" name="telephone" value="{{ old('telephone') }}" required autocomplete="telephone">
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" class="form-control @error('address') is-invalid @enderror" name="address" value="{{ old('address') }}" required autocomplete="address">
+                    </div>
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <input type="text" class="form-control @error('gender') is-invalid @enderror" name="gender" value="{{ old('gender') }}" required autocomplete="gender">
+                    </div>
                     <div class="form-group text-center">
                         <button class="btn btn-primary account-btn" type="submit">Signup</button>
                     </div>

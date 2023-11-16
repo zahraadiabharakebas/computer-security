@@ -34,6 +34,12 @@
                                     </span>
                         @enderror
                     </div>
+                    @if ($errors->has('error'))
+                        <div class="danger" style="color:rgb(218, 76, 76)">
+                            <strong> {{ $errors->first('error') }} </strong>
+                        </div>
+                        <br>
+                    @endif
                     <div class="form-group">
                         <label>Password</label>
                         <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">

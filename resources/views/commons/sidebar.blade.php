@@ -7,7 +7,7 @@
                     <a href="index.html"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
                 </li>
                 <li>
-                    <a href="doctors.html"><i class="fa fa-user-md"></i> <span>Doctors</span></a>
+                    <a href="{{route('doctor.index')}}"><i class="fa fa-user-md"></i> <span>Doctors</span></a>
                 </li>
                 <li>
                     <a href="patients.html"><i class="fa fa-wheelchair"></i> <span>Patients</span></a>
@@ -19,7 +19,7 @@
                     <a href="schedule.html"><i class="fa fa-calendar-check-o"></i> <span>Doctor Schedule</span></a>
                 </li>
                 <li>
-                    <a href="departments.html"><i class="fa fa-hospital-o"></i> <span>Departments</span></a>
+                    <a href="{{route('department.index')}}"><i class="fa fa-hospital-o"></i> <span>Departments</span></a>
                 </li>
 
                     </ul>

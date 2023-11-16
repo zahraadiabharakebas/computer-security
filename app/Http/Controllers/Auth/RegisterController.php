@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\UserRole;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Role;
+
 
 class RegisterController extends Controller
 {
@@ -49,10 +52,14 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
+
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'gender' => ['required','string', 'max:255'],
+            'telephone' => ['required','string', 'max:255','unique:users'],
+            'address' => ['required','string', 'max:255'],
         ]);
     }
 
@@ -64,10 +71,23 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        $patient = Role::where('key', env('PATIENT'))->first();
+        $patientId = $patient->id;
+
+        $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'telephone' => $data['telephone'],
+            'gender' => $data['gender'],
+            'address' => $data['address'],
         ]);
+
+        $role = new UserRole();
+        $role->role_id = $patientId;
+        $role->user_id = $user->id;
+        $role->save();
+
+        return $user;
     }
 }

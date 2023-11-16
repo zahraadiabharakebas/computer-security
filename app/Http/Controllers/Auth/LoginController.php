@@ -48,4 +48,31 @@ class LoginController extends Controller
 
         return redirect('/login');
     }
+
+    public function login(Request $request)
+    {
+        $this->validateLogin($request);
+
+
+        if ($this->hasTooManyLoginAttempts($request)) {
+            $this->fireLockoutEvent($request);
+
+            return $this->sendLockoutResponse($request);
+        }
+
+        if($this->guard()->validate($this->credentials($request))) {
+            if(Auth::attempt(['email' => $request->email, 'password' => $request->password, 'is_active' => 1])) {
+                return redirect('/');
+            }  else {
+                $this->incrementLoginAttempts($request);
+                abort(401, 'This action is unauthorized.');
+            }
+        } else {
+            $this->incrementLoginAttempts($request);
+            return back()->withErrors([
+                'error' => 'Credentials do not match our database.'
+            ])->withInput();
+        }
+    }
+
 }
