@@ -19,7 +19,7 @@ class PatientController extends Controller
             $query->where('role_id', $patientId);
         })->get();
 
-        return view('pages.Patient.List')->with('patients',$patients);
+        return view('pages.patient.List')->with('patients',$patients);
 
     }
 
@@ -38,8 +38,7 @@ class PatientController extends Controller
                 'regex:/^[0-9+]+$/'
             ],
             'image'=>'required',
-            'email'=>['required', 'unique:users,email',],
-            'doctor'=>'required',
+            'email'=>['required', 'unique:users,email',]
         ]);
         $patient = new User();
         $patient->name = $request->name;
@@ -48,7 +47,6 @@ class PatientController extends Controller
         $patient->password = $request->password;
         $patient->telephone = $request->telephone;
         $patient->date_birth = \DateTime::createFromFormat('d/m/Y', $request->date_of_birth)->format('Y-m-d');
-        $patient->doctor_id = $request->doctor;
         $patient->is_active = $request->status == 'active'? 1 : 0 ;
         $patient->gender = $request->gender == 'male' ? 'male' : 'female';
         if ($request->hasFile('image')) {
@@ -87,7 +85,7 @@ class PatientController extends Controller
     
         $doctors = User::whereIn('id', $doctorUserIds)->pluck('name', 'id');
     
-        return view('pages.patient.Add')->with('doctors', $doctors);
+        return view('pages.Patient.Add');
     }
     
 
@@ -105,7 +103,10 @@ class PatientController extends Controller
      */
     public function edit(string $id)
     {
-        //
+       
+      
+        $patient = User::find($id);
+        return view('pages.patient.Add')->with('data',$patient);
     }
 
     /**
@@ -113,7 +114,50 @@ class PatientController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $patient = User::find($id);
+        $request->validate([
+            'name' => 'required',
+            'password' => 'min:6|required_with:rpassword|same:rpassword',
+            'rpassword' => 'required',
+            'telephone' => [
+                'required',
+                'unique:users,telephone',
+                'regex:/^[0-9+]+$/'
+            ],
+            'telephone' => ['unique:users,telephone,' . $patient->id, 'regex:/^[0-9+]+$/'],
+            'email'=>['unique:users,email,' . $patient->id]
+        ]);
+
+        $patient->name = $request->name;
+        $patient->address = $request->address;
+        $patient->email = $request->email;
+        $patient->telephone = $request->telephone;
+
+        if($request->password) {
+            $patient->password = $request->password;
+        }
+        $patient->date_birth = \DateTime::createFromFormat('d/m/Y', $request->date_of_birth)->format('Y-m-d');
+        $patient->is_active = $request->status == 'active'? 1 : 0 ;
+        $patient->gender = $request->gender == 'male' ? 'male' : 'female';
+        if($request->image) {
+            if ($request->hasFile('image')) {
+                $fileNameWithExt = $request->file('image')->getClientOriginalName();
+                $fileNameWithExt = str_replace(' ', '', $fileNameWithExt);
+                if (strpos($fileNameWithExt, '(') !== false || strpos($fileNameWithExt, ')') !== false) {
+                    $fileNameWithExt = str_replace(['(', ')'], '', $fileNameWithExt);
+                }
+                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+                //Get just ext
+                $extension = $request->file('image')->getClientOriginalExtension();
+                //Filename to store
+                $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
+                // Upload image
+                $path = $request->file('image')->storeAs('public/images', $fileNameToStore);
+                $patient->image = 'storage/images/' . $fileNameToStore;
+            }
+        }
+        $patient->save();
+        return redirect()->route('patient.index');
     }
 
     /**
@@ -121,6 +165,20 @@ class PatientController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $patient = User::find($id);
+        if (!$patient) {
+            return response()->json([
+                'code' => 404,
+                'msg' => 'Doctor not found.'
+            ]);
+        }
+            $patient->delete();
+            $code = 200;
+            $msg = 'The selected doctor has been successfully deleted!';
+
+        return response()->json([
+            'code' => $code,
+            'msg'=>$msg
+        ]);
     }
 }
