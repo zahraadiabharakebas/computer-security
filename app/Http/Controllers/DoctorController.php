@@ -6,6 +6,7 @@ use App\Models\Department;
 use App\Models\Role;
 use App\Models\UserRole;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 
 class DoctorController extends Controller
@@ -33,26 +34,63 @@ class DoctorController extends Controller
         $departments = Department::pluck('name', 'id');
         return view('pages.doctor.Add')->with('departments',$departments);
     }
-
+    protected function validator(array $data)
+    {
+        $forbiddenUsernames = ['superuser', 'root', 'select', 'delete', 'update', 'and', 'where', 'sql', 'query', '/', '\\', ','];
+        $forbiddenEmails = ['superuser', 'root', 'select', 'delete', 'update', 'and', 'where', 'sql', 'query', '/', '\\', ','];
+    
+        Validator::extend('forbiddenUsername', function ($attribute, $value, $parameters, $validator) use ($forbiddenUsernames) {
+            foreach ($forbiddenUsernames as $username) {
+                if (stripos($value, $username) !== false) {
+                    return false;
+                }
+            }
+            return true;
+        }, 'The :attribute is forbidden.');
+    
+        Validator::extend('forbiddenEmail', function ($attribute, $value, $parameters, $validator) use ($forbiddenEmails) {
+            foreach ($forbiddenEmails as $email) {
+                if (stripos($value, $email) !== false) {
+                    return false;
+                }
+            }
+            return true;
+        }, 'The :attribute is forbidden.');
+    
+        return Validator::make($data, [
+            'username' => ['required', 'string', 'max:15', 'forbiddenUsername', 'regex:/^[a-zA-Z\s]+$/'],
+            'name' => ['required', 'string', 'max:15', 'forbiddenUsername', 'regex:/^[a-zA-Z\s]+$/'],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$/',
+            ],
+            'rpassword' => 'required',
+            'telephone' => [
+                'required',
+                'unique:users,telephone',
+                'regex:/^[0-9]{1,15}$/',
+            ],
+            'image' => 'required',
+            'email' => [
+                'required',
+                'unique:users,email',
+                'forbiddenEmail',
+            ],
+        ], [
+            'password.regex' => 'The password must include at least one digit, one lowercase letter, one uppercase letter, and one special character among @#$%^&+=.',
+        ]);
+    }
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'department' => 'required',
-            'password' => 'min:6|required_with:rpassword|same:rpassword',
-            'rpassword' => 'required',
-            'telephone' => [
-                'required',
-                'unique:users,telephone',
-                'regex:/^[0-9+]+$/'
-            ],
-            'image'=>'required',
-            'email'=>['required', 'unique:users,email',]
-        ]);
+        $this->validator($request->all())->validate();
         $doctor = new User();
+        $doctor->username = $request->username;
         $doctor->name = $request->name;
         $doctor->address = $request->address;
         $doctor->email = $request->email;
@@ -112,13 +150,15 @@ class DoctorController extends Controller
     {
         $doctor = User::find($id);
         $request->validate([
-            'name' => 'required',
+            'username' =>  ['required','regex:/^[a-zA-Z\s]+$/'],
+            'name' => ['required','regex:/^[a-zA-Z\s]+$/'],
             'department' => 'required',
             'password' => 'required_with:rPassword|same:rpassword',
             'telephone' => ['unique:users,telephone,' . $doctor->id, 'regex:/^[0-9+]+$/'],
             'email'=>['unique:users,email,' . $doctor->id]
         ]);
 
+        $doctor->username = $request->username;
         $doctor->name = $request->name;
         $doctor->address = $request->address;
         $doctor->email = $request->email;
