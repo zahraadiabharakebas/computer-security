@@ -61,5 +61,8 @@ class User extends Authenticatable
     public function getDepartment(){
         return $this->belongsTo(Department::class,'department_id','id');
     }
-    
+    public function getSchedule(){
+        return $this->hasOne(Schedule::class);
+    }
+
 }

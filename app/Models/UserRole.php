@@ -9,10 +9,10 @@ use App\Traits\UUID;
 class UserRole extends Model
 {
     use HasFactory,UUID;
-    public function role()
-    {
-        return $this->belongsTo(Role::class, 'role_id');
-    }
+//    public function role()
+//    {
+//        return $this->belongsTo(Role::class, 'role_id');
+//    }
 
 
 }

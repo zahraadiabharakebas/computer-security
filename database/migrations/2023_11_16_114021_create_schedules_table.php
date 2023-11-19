@@ -12,7 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('schedules', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
+            $table->uuid('doctor_id');
+            $table->string('start_date')->nullable();
+            $table->string('end_date')->nullable();
+            $table->string('message')->nullable();
+            $table->boolean('is_active')->nullable();
+            $table->foreign('doctor_id')->references('id')
+                ->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

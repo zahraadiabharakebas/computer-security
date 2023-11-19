@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->uuid('department_id')->nullable();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
@@ -24,6 +25,8 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->string('certificate')->nullable();
             $table->date('date_birth')->nullable();
+            $table->foreign('department_id')->references('id')
+                ->on('departments')->onDelete('cascade');
             $table->rememberToken();
             $table->timestamps();
         });

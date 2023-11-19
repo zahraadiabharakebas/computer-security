@@ -14,11 +14,11 @@
     <link rel="stylesheet" type="text/css" href="{{asset('assets/css/bootstrap-datetimepicker.min.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('assets/css/select2.min.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('assets/css/custom.css')}}">
-    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/select2.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap-datetimepicker.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+    <link rel="stylesheet" type="text/css" href="{{asset('assets/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{asset('assets/css/font-awesome.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{asset('assets/css/select2.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{asset('assets/css/style.css')}}">
+
 
     <!--[if lt IE 9]>
     <script src="{{asset('assets/js/html5shiv.min.js')}}"></script>
@@ -26,6 +26,7 @@
     <![endif]-->
     <link rel="stylesheet" type="text/css" href="{{asset('assets/css/custom.css')}}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
 
 </head>
 <body>
@@ -134,6 +135,17 @@
 <script src="{{asset('assets/js/jquery.dataTables.min.js')}}"></script>
 <script src="{{asset('assets/js/dataTables.bootstrap4.min.js')}}"></script>
 <script src="{{asset('assets/js/select2.min.js')}}"></script>
+<script src="{{asset('assets/js/bootstrap-datetimepicker.min.js')}}"></script>
+<script>
+    $(function () {
+        $('#datetimepicker3').datetimepicker({
+            format: 'LT'
+        });
+        $('#datetimepicker4').datetimepicker({
+            format: 'LT'
+        });
+    });
+</script>
 
 
 <script>
