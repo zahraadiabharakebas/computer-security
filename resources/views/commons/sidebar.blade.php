@@ -13,10 +13,10 @@
                     <a href="{{route('patient.index')}}"><i class="fa fa-wheelchair"></i> <span>Patients</span></a>
                 </li>
                 <li>
-                    <a href="appointments.html"><i class="fa fa-calendar"></i> <span>Appointments</span></a>
+                    <a href="{{route('appointment.index')}}"><i class="fa fa-calendar"></i> <span>Appointments</span></a>
                 </li>
                 <li>
-                    <a href="schedule.html"><i class="fa fa-calendar-check-o"></i> <span>Doctor Schedule</span></a>
+                    <a href="{{route('schedule.index')}}"><i class="fa fa-calendar-check-o"></i> <span>Doctor Schedule</span></a>
                 </li>
                 <li>
                     <a href="{{route('department.index')}}"><i class="fa fa-hospital-o"></i> <span>Departments</span></a>
