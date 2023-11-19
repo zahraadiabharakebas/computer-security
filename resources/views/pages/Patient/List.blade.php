@@ -22,7 +22,6 @@
                                 <th>Telephone</th>
                                 <th> Address</th>
                                 <th> Gender</th>
-                                <th> Doctor</th>
                                 <th>Status</th>
                                 <th class="text-right">Action</th>
                             </tr>
@@ -36,7 +35,6 @@
                                     <td>{{$data->telephone}}</td>
                                     <td>{{$data->address}}</td>
                                     <td>{{$data->gender}}</td>
-                                    <td>{{$data->getDoctors}}</td>
                                     <td>
                                         @if($data->status == 1)
                                             <span class="custom-badge status-green">
@@ -58,7 +56,7 @@
                                         </div>
                                     </td>
                                 </tr>
-                                <div id="delete_department_{{$data->id}}" class="modal fade delete-modal" role="dialog">
+                                <div id="delete_patient_{{$data->id}}" class="modal fade delete-modal" role="dialog">
                                     <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content">
                                             <div class="modal-body text-center">
@@ -66,7 +64,7 @@
                                                 <h3>Are you sure want to delete this Department?</h3>
                                                 <div class="m-t-20">
                                                     <a href="#" class="btn btn-white" data-dismiss="modal">Close</a>
-                                                    <button type="submit" onclick="DeleteAjaxCall('{{$data->id}}', '{{ route('department.destroy', ['department' => $data->id]) }}')" class="btn btn-danger">Delete</button>
+                                                    <button type="submit" onclick="DeleteAjaxCall('{{$data->id}}', '{{ route('patient.destroy', ['patient' => $data->id]) }}')" class="btn btn-danger">Delete</button>
                                                 </div>
                                             </div>
                                         </div>

@@ -13,22 +13,46 @@
                     <form method="POST" action="{{ route('doctor.store') }}" enctype="multipart/form-data">
                         @csrf
                         <div class="row">
+
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <label>User Name</label>
+                                            <input type="text" class="form-control" value="{{old('username')}}" name="username">
+                                            @error('username')
+                                            <div class="error-msg">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                            </div>
+                            </div>
+
                             <div class="col-sm-6">
                                 <div class="form-group">
-                                    <label>First Name <span class="text-danger">*</span></label>
+                                    <label>Full Name <span class="text-danger">*</span></label>
                                     <input class="form-control" type="text" name="name" value="{{old('name')}}" required>
+                                    @error('name')
+                                            <div class="error-msg">{{ $message }}</div>
+                                            @enderror
                                 </div>
                             </div>
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <label>Email <span class="text-danger">*</span></label>
                                     <input class="form-control" type="email" name="email" value="{{old('email')}}" required>
+                                    @error('email')
+                                            <div class="error-msg">{{ $message }}</div>
+                                            @enderror
                                 </div>
                             </div>
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <label>Password <span class="text-danger">*</span></label>
                                     <input class="form-control" type="password" name="password" value="{{old('password')}}" required>
+                                    @error('password')
+                                            <div class="error-msg">{{ $message }}</div>
+                                            @enderror
                                 </div>
                             </div>
                             <div class="col-sm-6">
@@ -85,6 +109,9 @@
                                 <div class="form-group">
                                     <label>Phone <span class="text-danger">*</span></label>
                                     <input class="form-control" type="text" name="telephone" value="{{old('telephone')}}">
+                                    @error('telephone')
+                                    <div class="error-msg">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="col-sm-6">
@@ -97,7 +124,7 @@
                                             </div>
                                         </div>
                                         <div class="upload-input">
-                                            <input type="file" name="image" class="form-control" onchange="previewFile(this, 'logoPreview')">
+                                        <input type="file" name="image" class="form-control" onchange="previewFile(this, 'logoPreview')" accept="image/jpeg, image/png, image/gif, image/jpg">
                                         </div>
                                     </div>
                                 </div>
@@ -144,7 +171,7 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label>First Name <span class="text-danger">*</span></label>
+                                        <label>Full Name <span class="text-danger">*</span></label>
                                         <input class="form-control" type="text" name="name" value="{{$data->name}}" required>
                                         @error('name')
                                         <div class="error-msg">{{ $message }}</div>
