@@ -179,7 +179,7 @@
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label>Password <span class="text-danger">*</span></label>
+                                        <label>Password </label>
                                         <input class="form-control" type="password" name="password" value="{{old('password')}}">
                                         @error('password')
                                         <div class="error-msg">{{ $message }}</div>
@@ -188,7 +188,7 @@
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
-                                        <label>Confirm Password <span class="text-danger">*</span></label>
+                                        <label>Confirm Password </label>
                                         <input class="form-control" type="password" name="rpassword" value="{{old('password')}}">
                                         @error('rpassword')
                                         <div class="error-msg">{{ $message }}</div>
@@ -249,7 +249,7 @@
                                         </div>
                                     </div>
                                 </div>
-                               
+
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label>Phone <span class="text-danger">*</span></label>
@@ -296,7 +296,7 @@
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="m-t-20 text-center">
-                                        <button class="btn btn-primary submit-btn" type="submit">Create patient</button>
+                                        <button class="btn btn-primary submit-btn" type="submit">Save patient</button>
                                     </div>
                                 </div>
                             </div>

@@ -83,8 +83,7 @@ class LoginController extends Controller
     // }
 
     public function login(Request $request)
-{
-    try {
+    {
         $user = User::where('email', $request->email)->first();
         $check = false;
 
@@ -92,31 +91,38 @@ class LoginController extends Controller
             $check = Hash::check($request->password, $user->password);
         }
 
-        if (!$check) {
-            if (RateLimiter::hit($request->ip(), 300) && RateLimiter::tooManyAttempts($request->ip(), 3)) {
+        if ($this->guard()->validate($this->credentials($request))) {
+            if (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'is_active' => 1])) {
+                return redirect('/');
+            } else {
+                $this->incrementLoginAttempts($request);
+                abort(401, 'This action is unauthorized.');
+            }
+        } else {
+            if (!$check) {
+                $identifier = $request->email . '_' . $request->input('device_id');
+
+                if (RateLimiter::hit($identifier, 60) && RateLimiter::tooManyAttempts($identifier, 3)) {
+                    // Log the identifier and rate limiting status for debugging
+                    \Log::info("Identifier: $identifier, Rate Limit Exceeded");
+
+                    return back()->withErrors([
+                        'error' => 'Too many failed login attempts. Your account is restricted for 1 minute.'
+                    ])->withInput();
+                }
+
+                // Log the identifier for debugging
+                \Log::info("Identifier: $identifier, Credentials do not match our database.");
+
                 return back()->withErrors([
-                    'error' => 'Too many failed login attempts. Your IP is restricted for 5 minutes.'
+                    'error' => 'Credentials do not match our database.'
                 ])->withInput();
             }
-            return back()->withErrors([
-                'error' => 'Credentials do not match our database.'
-            ])->withInput();
+
+            // Clear rate limiter if login is successful
+            $identifier = $request->email . '_' . $request->input('device_id');
+            RateLimiter::clear($identifier);
         }
-
-        // Clear rate limiter if login is successful
-        RateLimiter::clear($request->ip());
-
-        $accessToken = AccessToken::updateOrCreate(
-            [ 'user_id' => $user->id ],
-            [ 'access_token' => Str::random(255) ]
-        );
-
-        return response()->json([ 'access_token' =>  $accessToken->access_token ]);
-    } catch (\Throwable $th) {
-        throw $th;
     }
-}
-
-    
 
 }

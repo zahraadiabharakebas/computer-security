@@ -313,7 +313,7 @@
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="m-t-20 text-center">
-                                        <button class="btn btn-primary submit-btn" type="submit">Create Doctor</button>
+                                        <button class="btn btn-primary submit-btn" type="submit">Save Doctor</button>
                                     </div>
                                 </div>
                             </div>

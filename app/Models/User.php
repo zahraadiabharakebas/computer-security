@@ -52,6 +52,13 @@ class User extends Authenticatable
     public function getRoles(){
         return  $this->belongsToMany(Role::class,'user_roles','user_id','role_id');
     }
+    public function hasRole($role)
+    {
+        if ($this->getRoles()->where('key', $role)->first()) {
+            return true;
+        }
+        return false;
+    }
     public function getDoctorAppointments(){
         return $this->hasMany(Appointment::class);
     }

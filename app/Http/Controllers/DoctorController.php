@@ -14,6 +14,9 @@ class DoctorController extends Controller
     /**
      * Display a listing of the resource.
      */
+    public function __construct(){
+        $this->middleware('checkrole:A|D|P');
+    }
     public function index()
     {
         $doctor = Role::where('key', env('DOCTOR'))->first();
@@ -38,7 +41,7 @@ class DoctorController extends Controller
     {
         $forbiddenUsernames = ['superuser', 'root', 'select', 'delete', 'update', 'and', 'where', 'sql', 'query', '/', '\\', ','];
         $forbiddenEmails = ['superuser', 'root', 'select', 'delete', 'update', 'and', 'where', 'sql', 'query', '/', '\\', ','];
-    
+
         Validator::extend('forbiddenUsername', function ($attribute, $value, $parameters, $validator) use ($forbiddenUsernames) {
             foreach ($forbiddenUsernames as $username) {
                 if (stripos($value, $username) !== false) {
@@ -47,7 +50,7 @@ class DoctorController extends Controller
             }
             return true;
         }, 'The :attribute is forbidden.');
-    
+
         Validator::extend('forbiddenEmail', function ($attribute, $value, $parameters, $validator) use ($forbiddenEmails) {
             foreach ($forbiddenEmails as $email) {
                 if (stripos($value, $email) !== false) {
@@ -56,18 +59,12 @@ class DoctorController extends Controller
             }
             return true;
         }, 'The :attribute is forbidden.');
-    
+
         return Validator::make($data, [
             'username' => ['required', 'string', 'max:15', 'forbiddenUsername', 'regex:/^[a-zA-Z\s]+$/'],
             'name' => ['required', 'string', 'max:15', 'forbiddenUsername', 'regex:/^[a-zA-Z\s]+$/'],
-            'password' => [
-                'required',
-                'string',
-                'min:8',
-                'confirmed',
-                'regex:/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$/',
-            ],
-            'rpassword' => 'required',
+            'password' => 'min:6|required_with:rpassword|same:rpassword',
+            'rpassword'=>'required',
             'telephone' => [
                 'required',
                 'unique:users,telephone',
@@ -79,8 +76,6 @@ class DoctorController extends Controller
                 'unique:users,email',
                 'forbiddenEmail',
             ],
-        ], [
-            'password.regex' => 'The password must include at least one digit, one lowercase letter, one uppercase letter, and one special character among @#$%^&+=.',
         ]);
     }
     /**

@@ -6,9 +6,11 @@
                 <div class="col-sm-5 col-5">
                     <h4 class="page-title">Patients</h4>
                 </div>
+                @if(Auth::user()->getRoles->where('key',env('ADMIN'))->first() != null)
                 <div class="col-sm-7 col-7 text-right m-b-30">
                     <a href="{{route('patient.create')}}" class="btn btn-primary btn-rounded"><i class="fa fa-plus"></i> Add Patient</a>
                 </div>
+                    @endif
             </div>
             <div class="row">
                 <div class="col-md-12">
@@ -46,6 +48,7 @@
                                             </span>
                                         @endif
                                     </td>
+                                    @if(Auth::user()->getRoles->where('key',env('ADMIN'))->first() != null)
                                     <td class="text-right">
                                         <div class="dropdown dropdown-action">
                                             <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
@@ -55,6 +58,17 @@
                                             </div>
                                         </div>
                                     </td>
+                                    @endif
+                                    @if(Auth::user()->getRoles->where('key',env('PATIENT'))->first() != null)
+                                        <td class="text-right">
+                                            <div class="dropdown dropdown-action">
+                                                <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-right">
+                                                    <a class="dropdown-item" href="{{ route('patient.edit', ['patient' => $data->id]) }}"><i class="fa fa-pencil m-r-5"></i> Edit</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    @endif
                                 </tr>
                                 <div id="delete_patient_{{$data->id}}" class="modal fade delete-modal" role="dialog">
                                     <div class="modal-dialog modal-dialog-centered">

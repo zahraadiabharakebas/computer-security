@@ -26,16 +26,16 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         $forbiddenUsernames = ['superuser', 'root', 'select', 'delete', 'update', 'and', 'where', 'sql', 'query', '/', '\\', ','];
-    
+
         Validator::extend('forbiddenUsername', function ($attribute, $value, $parameters, $validator) use ($forbiddenUsernames) {
             foreach ($forbiddenUsernames as $username) {
                 if (stripos($value, $username) !== false) {
-                    return false; 
+                    return false;
                 }
             }
-            return true; 
+            return true;
         }, 'The :attribute is forbidden.');
-    
+
         return Validator::make($data, [
             'username' => ['required', 'string', 'max:15', 'forbiddenUsername','regex:/^[a-zA-Z\s]+$/'],
             'name' => ['required', 'string', 'max:15','forbiddenUsername','regex:/^[a-zA-Z\s]+$/'],
@@ -64,11 +64,14 @@ class RegisterController extends Controller
             'gender' => ['required', 'string', 'max:255'],
             'telephone' => ['required', 'string', 'max:15', 'unique:users'],
             'address' => ['required', 'string', 'max:255'],
-        ]);
+        ],
+            [
+                'password.regex' => 'The password must include at least one digit, one lowercase letter, one uppercase letter, and one special character among @#$%^&+=.',
+            ]);
     }
-    
-    
-    
+
+
+
 
     protected function create(array $data)
     {

@@ -7,9 +7,11 @@
             <div class="col-sm-4 col-3">
                 <h4 class="page-title">Doctors</h4>
             </div>
+            @if(Auth::user()->getRoles->where('key',env('ADMIN'))->first() != null)
             <div class="col-sm-8 col-9 text-right m-b-20">
                 <a href="{{route('doctor.create')}}" class="btn btn-primary btn-rounded float-right"><i class="fa fa-plus"></i> Add Doctor</a>
             </div>
+                @endif
         </div>
         <div class="row doctor-grid doctor-container">
             @foreach($doctors as $data)
@@ -18,6 +20,7 @@
                     <div class="doctor-img">
                         <a class="avatar" href=""><img alt="{{$data->name}} image" style="" src="{{asset($data->image)}}"></a>
                     </div>
+                    @if(Auth::user()->getRoles->where('key',env('ADMIN'))->first() != null)
                     <div class="dropdown profile-action">
                         <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
                         <div class="dropdown-menu dropdown-menu-right">
@@ -25,7 +28,16 @@
                             <a type="button"  class="dropdown-item"   data-toggle="modal" data-target="#delete_doctor_{{$data->id}}" data-doctor-id="{{$data->id}}"><i class="fa fa-trash-o m-r-5"></i> Delete</a>
                         </div>
                     </div>
-                    <h4 class="doctor-name text-ellipsis"><a href="profile.html">{{$data->name}}</a></h4>
+                    @endif
+                    @if(Auth::user()->getRoles->where('key',env('DOCTOR'))->first() != null)
+                        <div class="dropdown profile-action">
+                            <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="{{ route('doctor.edit', ['doctor' => $data->id]) }}"><i class="fa fa-pencil m-r-5"></i> Edit</a>
+                            </div>
+                        </div>
+                    @endif
+                    <h4 class="doctor-name text-ellipsis"><a href="">{{$data->name}}</a></h4>
                     <div class="doc-prof">{{$data->getDepartment->name}}</div>
                     <div class="user-country">
                         <i class="fa fa-map-marker"></i> {{$data->address}}

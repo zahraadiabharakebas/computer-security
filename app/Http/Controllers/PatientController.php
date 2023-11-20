@@ -11,7 +11,7 @@ use App\Models\User;
 
 class PatientController extends Controller
 {
-   
+
     public function index()
     {
         $patient =  Role::where('key', env('PATIENT'))->first();
@@ -97,7 +97,7 @@ class PatientController extends Controller
         //     'email' => ['required', 'unique:users,email'],
         // ], [
         //     'password.regex' => 'The password must include at least one digit, one lowercase letter, one uppercase letter, and one special character among @#$%^&+=.',
-        // ]);        
+        // ]);
         $this->validator($request->all())->validate();
         $patient = new User();
         $patient->username = $request->username;
@@ -137,14 +137,14 @@ class PatientController extends Controller
     public function create()
     {
         $doctorUserIds = UserRole::whereHas('role', function ($query) {
-            $query->where('key', env('DOCTOR')); 
+            $query->where('key', env('DOCTOR'));
         })->pluck('user_id');
-    
+
         $doctors = User::whereIn('id', $doctorUserIds)->pluck('name', 'id');
-    
+
         return view('pages.Patient.Add');
     }
-    
+
 
 
     /**
@@ -160,8 +160,6 @@ class PatientController extends Controller
      */
     public function edit(string $id)
     {
-       
-      
         $patient = User::find($id);
         return view('pages.patient.Add')->with('data',$patient);
     }
@@ -175,8 +173,7 @@ class PatientController extends Controller
         $request->validate([
             'username' => ['required','regex:/^[a-zA-Z\s]+$/'],
             'name' => ['required','regex:/^[a-zA-Z\s]+$/'],
-            'password' => 'min:6|required_with:rpassword|same:rpassword',
-            'rpassword' => 'required',
+            'password' => 'required_with:rPassword|same:rpassword',
             'telephone' => [
                 'required',
                 'unique:users,telephone',
