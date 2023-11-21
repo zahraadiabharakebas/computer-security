@@ -6,9 +6,11 @@
                 <div class="col-sm-5 col-5">
                     <h4 class="page-title">Departments</h4>
                 </div>
+                @if(Auth::user()->getRoles->where('key',env('ADMIN'))->first() != null)
                 <div class="col-sm-7 col-7 text-right m-b-30">
                     <a href="{{route('department.create')}}" class="btn btn-primary btn-rounded"><i class="fa fa-plus"></i> Add Department</a>
                 </div>
+                @endif
             </div>
             <div class="row">
                 <div class="col-md-12">
@@ -19,7 +21,9 @@
                                 <th>#</th>
                                 <th>Department Name</th>
                                 <th>Status</th>
+                                @if(Auth::user()->getRoles->where('key',env('ADMIN'))->first() != null)
                                 <th class="text-right">Action</th>
+                                @endif
                             </tr>
                             </thead>
                             <tbody>
@@ -38,6 +42,7 @@
                                             </span>
                                         @endif
                                     </td>
+                                    @if(Auth::user()->getRoles->where('key',env('ADMIN'))->first() != null)
                                     <td class="text-right">
                                         <div class="dropdown dropdown-action">
                                             <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
@@ -47,6 +52,7 @@
                                             </div>
                                         </div>
                                     </td>
+                                    @endif
                                 </tr>
                                 <div id="delete_department_{{$data->id}}" class="modal fade delete-modal" role="dialog">
                                     <div class="modal-dialog modal-dialog-centered">

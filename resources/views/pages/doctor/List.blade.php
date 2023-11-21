@@ -30,12 +30,17 @@
                     </div>
                     @endif
                     @if(Auth::user()->getRoles->where('key',env('DOCTOR'))->first() != null)
+                    @if(Auth::user()->id == $data->id)
                         <div class="dropdown profile-action">
                             <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
                             <div class="dropdown-menu dropdown-menu-right">
                                 <a class="dropdown-item" href="{{ route('doctor.edit', ['doctor' => $data->id]) }}"><i class="fa fa-pencil m-r-5"></i> Edit</a>
+                                @if(Auth::user()->getRoles->where('key',env('ADMIN'))->first() != null)
+                                <a type="button"  class="dropdown-item"   data-toggle="modal" data-target="#delete_doctor_{{$data->id}}" data-doctor-id="{{$data->id}}"><i class="fa fa-trash-o m-r-5"></i> Delete</a>
+                           @endif
                             </div>
                         </div>
+                    @endif
                     @endif
                     <h4 class="doctor-name text-ellipsis"><a href="">{{$data->name}}</a></h4>
                     <div class="doc-prof">{{$data->getDepartment->name}}</div>

@@ -9,10 +9,12 @@
                     </div>
                 </div>
                 <div class="row">
+
                     <div class="col-lg-8 offset-lg-2">
                         <form method="POST" action="{{ route('schedule.store') }}">
                             @csrf
                             <div class="row">
+                              
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Doctor Name</label>
@@ -21,7 +23,9 @@
                                         <div class="error-msg">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                </div>
+                                </div> 
+                              
+
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Available Days</label>

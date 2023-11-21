@@ -6,9 +6,11 @@
                 <div class="col-sm-4 col-3">
                     <h4 class="page-title">Schedule</h4>
                 </div>
+                @if(Auth::user()->getRoles->where('key', env('ADMIN'))->first() != null || Auth::user()->getRoles->where('key', env('DOCTOR'))->first() != null)
                 <div class="col-sm-8 col-9 text-right m-b-20">
                     <a href="{{route('schedule.create')}}" class="btn btn btn-primary btn-rounded float-right"><i class="fa fa-plus"></i> Add Schedule</a>
                 </div>
+                @endif
             </div>
             <div class="row">
                 <div class="col-md-12">
@@ -21,7 +23,9 @@
                                 <th>Available Days</th>
                                 <th>Available Time</th>
                                 <th>Status</th>
+                                @if(Auth::user()->getRoles->where('key', env('ADMIN'))->first() != null || Auth::user()->getRoles->where('key', env('DOCTOR'))->first() != null)
                                 <th class="text-right">Action</th>
+                                @endif
                             </tr>
                             </thead>
                             <tbody>
@@ -47,6 +51,7 @@
                                     </span>
                                     @endif
                                 </td>
+                                @if(Auth::user()->getRoles->where('key', env('ADMIN'))->first() != null)
                                 <td class="text-right">
                                     <div class="dropdown dropdown-action">
                                         <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
@@ -56,6 +61,25 @@
                                         </div>
                                     </div>
                                 </td>
+                                @endif
+
+
+                                @if(Auth::user()->getRoles->where('key', env('DOCTOR'))->first() != null)
+                                @if(Auth::user()->id == $data->doctor_id)
+                                <td class="text-right">
+                                    <div class="dropdown dropdown-action">
+                                        <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <a class="dropdown-item" href="{{ route('schedule.edit', ['schedule' => $data->id]) }}"><i class="fa fa-pencil m-r-5"></i> Edit</a>
+                                            <a type="button"  class="dropdown-item"   data-toggle="modal" data-target="#delete_schedule_{{$data->id}}" data-schedule-id="{{$data->id}}"><i class="fa fa-trash-o m-r-5"></i> Delete</a>
+                                        </div>
+                                    </div>
+                                </td>
+                                @endif
+                                @endif
+
+
+
                             </tr>
                             <div id="delete_schedule_{{$data->id}}" class="modal fade delete-modal" role="dialog">
                                 <div class="modal-dialog modal-dialog-centered">
