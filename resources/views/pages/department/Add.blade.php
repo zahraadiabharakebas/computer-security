@@ -18,7 +18,6 @@
                         </div>
                         <div class="form-group">
                             <label>Description</label>
-                            <textarea cols="30" rows="4" class="form-control" name="department_description" required>{{old('department_description')}}</textarea>
                         </div>
                         <div class="form-group">
                             <label class="display-block">Department Status</label>
@@ -87,4 +86,10 @@
         @endif
 
     </div>
+@endsection
+@section('customjs')
+{{--<script>--}}
+{{--    // Replace the textarea with CKEditor--}}
+{{--    CKEDITOR.replace('department_description');--}}
+{{--</script>--}}
 @endsection

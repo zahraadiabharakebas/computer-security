@@ -56,73 +56,67 @@ class LoginController extends Controller
         return redirect('/login');
     }
 
-    // public function login(Request $request)
-    // {
-    //     $this->validateLogin($request);
-
-
-    //     if ($this->hasTooManyLoginAttempts($request)) {
-    //         $this->fireLockoutEvent($request);
-
-    //         return $this->sendLockoutResponse($request);
-    //     }
-
-    //     if($this->guard()->validate($this->credentials($request))) {
-    //         if(Auth::attempt(['email' => $request->email, 'password' => $request->password, 'is_active' => 1])) {
-    //             return redirect('/');
-    //         }  else {
-    //             $this->incrementLoginAttempts($request);
-    //             abort(401, 'This action is unauthorized.');
-    //         }
-    //     } else {
-    //         $this->incrementLoginAttempts($request);
-    //         return back()->withErrors([
-    //             'error' => 'Credentials do not match our database.'
-    //         ])->withInput();
-    //     }
-    // }
-
+//    public function login(Request $request){
+//        $user = User::where('email', $request->email)->first();
+//        $check = false;
+//        if ($user) {
+//            $check = Hash::check($request->password, $user->password);}
+//        if ($this->guard()->validate($this->credentials($request))) {
+//            if (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'is_active' => 1])) {
+//                return redirect('/');
+//            } else {
+//                $this->incrementLoginAttempts($request);
+//                abort(401, 'This action is unauthorized.');}} else {
+//            if (!$check) {
+//                $identifier = $request->email . '_' . $request->input('device_id');
+//                if (RateLimiter::hit($identifier, 60) && RateLimiter::tooManyAttempts($identifier, 3)) {
+//                    \Log::info("Identifier: $identifier, Rate Limit Exceeded");
+//                    return back()->withErrors([
+//                        'error' => 'Too many failed login attempts. Your account is restricted for 1 minute.'
+//                    ])->withInput();}
+//                \Log::info("Identifier: $identifier, Credentials do not match our database.");
+//                return back()->withErrors([
+//                    'error' => 'Credentials do not match our database.'
+//                ])->withInput();
+//            }
+//            $identifier = $request->email . '_' . $request->input('device_id');
+//            RateLimiter::clear($identifier);
+//        }
+//    }
     public function login(Request $request)
     {
+        $identifier = $request->email . '_' . $request->input('device_id');
+
+        // Check rate limit before authentication
+        if (RateLimiter::hit($identifier, 60) && RateLimiter::tooManyAttempts($identifier, 4)) {
+            \Log::info("Identifier: $identifier, Rate Limit Exceeded");
+            return back()->withErrors([
+                'error' => 'Too many failed login attempts. Your account is restricted for 1 minute.'
+            ])->withInput();
+        }
+
         $user = User::where('email', $request->email)->first();
-        $check = false;
 
-        if ($user) {
-            $check = Hash::check($request->password, $user->password);
-        }
-
-        if ($this->guard()->validate($this->credentials($request))) {
-            if (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'is_active' => 1])) {
-                return redirect('/');
-            } else {
-                $this->incrementLoginAttempts($request);
-                abort(401, 'This action is unauthorized.');
-            }
-        } else {
-            if (!$check) {
-                $identifier = $request->email . '_' . $request->input('device_id');
-
-                if (RateLimiter::hit($identifier, 60) && RateLimiter::tooManyAttempts($identifier, 3)) {
-                    // Log the identifier and rate limiting status for debugging
-                    \Log::info("Identifier: $identifier, Rate Limit Exceeded");
-
-                    return back()->withErrors([
-                        'error' => 'Too many failed login attempts. Your account is restricted for 1 minute.'
-                    ])->withInput();
-                }
-
-                // Log the identifier for debugging
-                \Log::info("Identifier: $identifier, Credentials do not match our database.");
-
-                return back()->withErrors([
-                    'error' => 'Credentials do not match our database.'
-                ])->withInput();
-            }
-
-            // Clear rate limiter if login is successful
-            $identifier = $request->email . '_' . $request->input('device_id');
+        if ($user && Hash::check($request->password, $user->password) && $user->is_active) {
+            // Clear rate limiter on successful login
             RateLimiter::clear($identifier);
+
+            // Attempt authentication
+            if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+                return redirect('/');
+            }
         }
+
+        \Log::info("Identifier: $identifier, Credentials do not match our database.");
+
+        // Increment rate limiter on failed login
+        RateLimiter::hit($identifier, 60);
+
+        return back()->withErrors([
+            'error' => 'Credentials do not match our database.'
+        ])->withInput();
     }
+
+
 
 }

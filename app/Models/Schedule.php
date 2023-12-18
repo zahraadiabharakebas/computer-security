@@ -22,7 +22,6 @@ class schedule extends Model
             parent::setAttribute($key, $value);
         }
     }
-
     public function getAttribute($key)
     {
         if (in_array($key, $this->encrypt) && !empty($this->attributes[$key])) {

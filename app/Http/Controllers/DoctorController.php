@@ -8,6 +8,9 @@ use App\Models\UserRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
 
 class DoctorController extends Controller
 {
@@ -19,7 +22,7 @@ class DoctorController extends Controller
     }
     public function index()
     {
-        $doctor = Role::where('key', env('DOCTOR'))->first();
+        $doctor = Role::where('key', 'D')->first();
         $doctorId = $doctor->id;
 
         $doctors = User::whereHas('getRoles', function ($query) use ($doctorId) {
@@ -34,7 +37,7 @@ class DoctorController extends Controller
      */
     public function create()
     {
-        $departments = Department::pluck('name', 'id');
+        $departments = Department::where('status',1)->pluck('name', 'id');
         return view('pages.doctor.Add')->with('departments',$departments);
     }
     protected function validator(array $data)
@@ -61,28 +64,38 @@ class DoctorController extends Controller
         }, 'The :attribute is forbidden.');
 
         return Validator::make($data, [
-            'username' => ['required', 'string', 'max:15', 'forbiddenUsername', 'regex:/^[a-zA-Z\s]+$/'],
-            'name' => ['required', 'string', 'max:15', 'forbiddenUsername', 'regex:/^[a-zA-Z\s]+$/'],
+            'username' => [
+                'required',
+                'string',
+                'max:25',
+                'forbiddenUsername',
+                'regex:/^[a-zA-Z\s]+$/',
+                'unique:users' // Add the 'unique' rule and specify the table name
+            ],
+            'name' => ['required', 'string', 'max:25', 'forbiddenUsername', 'regex:/^[a-zA-Z\s]+$/'],
             'password' => 'min:6|required_with:rpassword|same:rpassword',
             'rpassword'=>'required',
             'telephone' => [
                 'required',
-                'unique:users,telephone',
+                'unique:users,telephone', // Assuming 'telephone' is a unique field in the 'users' table
                 'regex:/^[0-9]{1,15}$/',
             ],
             'image' => 'required',
             'email' => [
                 'required',
-                'unique:users,email',
+                'unique:users,email', // Assuming 'email' is a unique field in the 'users' table
                 'forbiddenEmail',
             ],
         ]);
+
     }
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
+        try {
+        DB::beginTransaction();
         $this->validator($request->all())->validate();
         $doctor = new User();
         $doctor->username = $request->username;
@@ -96,14 +109,14 @@ class DoctorController extends Controller
         $doctor->is_active = $request->status == 'active'? 1 : 0 ;
         $doctor->gender = $request->gender == 'male' ? 'male' : 'female';
         if ($request->hasFile('image')) {
-            $fileNameWithExt = $request->file('image')->getClientOriginalName();
+            $fileNameWithExt = $request->file('image')->hashName();
             $fileNameWithExt = str_replace(' ', '', $fileNameWithExt);
             if (strpos($fileNameWithExt, '(') !== false || strpos($fileNameWithExt, ')') !== false) {
                 $fileNameWithExt = str_replace(['(', ')'], '', $fileNameWithExt);
             }
             $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
             //Get just ext
-            $extension = $request->file('image')->getClientOriginalExtension();
+            $extension = $request->file('image')->extension();
             //Filename to store
             $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
             // Upload image
@@ -111,13 +124,19 @@ class DoctorController extends Controller
             $doctor->image = 'storage/images/' . $fileNameToStore;
         }
         $doctor->save();
-        $doctors = Role::where('key', env('DOCTOR'))->first();
+        $doctors = Role::where('key', 'D')->first();
         $doctorId = $doctors->id;
         $role = new UserRole();
         $role->user_id = $doctor->id;
         $role->role_id = $doctorId;
         $role->save();
+        DB::commit();
         return redirect()->route('doctor.index');
+        } catch (\Exception $e) {
+            Log::error('Caught exception: ' . $e->getMessage(), ['exception' => $e]);
+            DB::rollBack();
+            return response()->json(['error' => 'Something went wrong'], 500);
+        }
     }
 
     /**
@@ -143,6 +162,8 @@ class DoctorController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        try {
+        DB::beginTransaction();
         $doctor = User::find($id);
         $request->validate([
             'username' =>  ['required','regex:/^[a-zA-Z\s]+$/'],
@@ -168,14 +189,14 @@ class DoctorController extends Controller
         $doctor->gender = $request->gender == 'male' ? 'male' : 'female';
         if($request->image) {
             if ($request->hasFile('image')) {
-                $fileNameWithExt = $request->file('image')->getClientOriginalName();
+                $fileNameWithExt = $request->file('image')->hashName();
                 $fileNameWithExt = str_replace(' ', '', $fileNameWithExt);
                 if (strpos($fileNameWithExt, '(') !== false || strpos($fileNameWithExt, ')') !== false) {
                     $fileNameWithExt = str_replace(['(', ')'], '', $fileNameWithExt);
                 }
                 $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
                 //Get just ext
-                $extension = $request->file('image')->getClientOriginalExtension();
+                $extension = $request->file('image')->extension();
                 //Filename to store
                 $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
                 // Upload image
@@ -183,9 +204,13 @@ class DoctorController extends Controller
                 $doctor->image = 'storage/images/' . $fileNameToStore;
             }
         }
-        $doctor->save();
-        return redirect()->route('doctor.index');
-
+            DB::commit();
+            return redirect()->route('doctor.index');
+        } catch (\Exception $e) {
+            Log::error('Caught exception: ' . $e->getMessage(), ['exception' => $e]);
+            DB::rollBack();
+            return response()->json(['error' => 'Something went wrong'], 500);
+        }
     }
 
     /**
@@ -209,4 +234,11 @@ class DoctorController extends Controller
             'msg'=>$msg
         ]);
     }
+    public function getDoctors($departmentId)
+    {
+
+        $doctors = Doctor::where('department_id', $departmentId)->get();
+        return response()->json($doctors);
+    }
+
 }

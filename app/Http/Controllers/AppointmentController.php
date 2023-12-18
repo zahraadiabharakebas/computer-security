@@ -7,6 +7,8 @@ use App\Models\Department;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AppointmentController extends Controller
 {
@@ -24,12 +26,13 @@ class AppointmentController extends Controller
      */
     public function create()
     {
-        $departments = Department::pluck('name', 'id');
-        $patient =  Role::where('key', env('PATIENT'))->first();
+        $departments = Department::where('status',1)->get();
+        $patient =  Role::where('key', 'P')->first();
         $patientId = $patient->id ;
         $patients = User::whereHas('getRoles', function ($query) use ($patientId) {
             $query->where('role_id', $patientId);
         })->get();
+
         return view('pages.appointment.Add')
         ->with('departments',$departments)
         ->with('patients',$patients);
