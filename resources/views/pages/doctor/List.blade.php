@@ -13,8 +13,15 @@
             </div>
                 @endif
         </div>
+        @if($errors->any())
+            <div class="alert alert-danger">
+                    @foreach($errors->all() as $error)
+                        {{ $error }}
+                    @endforeach
+            </div>
+        @endif
         <div class="row doctor-grid doctor-container">
-            @foreach($doctors as $data)
+        @foreach($doctors as $data)
             <div class="col-md-4 col-sm-4  col-lg-3 doctor-card" id='row{{$data->id}}'>
                 <div class="profile-widget">
                     <div class="doctor-img">
@@ -60,13 +67,14 @@
                 </div>
             @endforeach
         </div>
-{{--        <div class="row">--}}
-{{--            <div class="col-sm-12">--}}
-{{--                <div class="see-all">--}}
-{{--                    <a class="see-all-btn" href="javascript:void(0);" id="load-more-btn">Load More</a>--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--        </div>--}}
     </div>
 </div>
+@endsection
+@section('customjs')
+    <script>
+        setTimeout(function() {
+            document.getElementById('errorAlert').style.display = 'none';
+        }, 1000);
+    </script>
+
 @endsection

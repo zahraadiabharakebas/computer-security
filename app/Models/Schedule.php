@@ -12,8 +12,6 @@ class schedule extends Model
 {
     use HasFactory,UUID;
     protected $encrypt = ['message'];
-
-
     public function setAttribute($key, $value)
     {
         if (in_array($key, $this->encrypt)) {

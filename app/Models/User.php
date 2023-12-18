@@ -8,7 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Traits\UUID;
-
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Crypt;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable,UUID;
@@ -59,6 +60,7 @@ class User extends Authenticatable
         }
         return false;
     }
+
     public function getDoctorAppointments(){
         return $this->hasMany(Appointment::class);
     }

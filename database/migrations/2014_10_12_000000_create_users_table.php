@@ -24,6 +24,8 @@ return new class extends Migration
             $table->string('telephone', 15)->unique();
             $table->string('address')->nullable();
             $table->string('image')->nullable();
+            $table->string('hashed_image')->nullable();
+
             $table->date('date_birth')->nullable();
             $table->foreign('department_id')->references('id')
                 ->on('departments')->onDelete('cascade');

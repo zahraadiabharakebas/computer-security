@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\File;
 
 
 class DoctorController extends Controller
@@ -87,55 +90,65 @@ class DoctorController extends Controller
                 'forbiddenEmail',
             ],
         ]);
-
     }
     /**
      * Store a newly created resource in storage.
-     */
+     **/
     public function store(Request $request)
     {
         try {
-        DB::beginTransaction();
-        $this->validator($request->all())->validate();
-        $doctor = new User();
-        $doctor->username = $request->username;
-        $doctor->name = $request->name;
-        $doctor->address = $request->address;
-        $doctor->email = $request->email;
-        $doctor->password = $request->password;
-        $doctor->telephone = $request->telephone;
-        $doctor->date_birth = \DateTime::createFromFormat('d/m/Y', $request->date_of_birth)->format('Y-m-d');
-        $doctor->department_id = $request->department;
-        $doctor->is_active = $request->status == 'active'? 1 : 0 ;
-        $doctor->gender = $request->gender == 'male' ? 'male' : 'female';
-        if ($request->hasFile('image')) {
-            $fileNameWithExt = $request->file('image')->hashName();
-            $fileNameWithExt = str_replace(' ', '', $fileNameWithExt);
-            if (strpos($fileNameWithExt, '(') !== false || strpos($fileNameWithExt, ')') !== false) {
-                $fileNameWithExt = str_replace(['(', ')'], '', $fileNameWithExt);
+            DB::beginTransaction();
+            $validator = $this->validator($request->all());
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
             }
-            $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
-            //Get just ext
-            $extension = $request->file('image')->extension();
-            //Filename to store
-            $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
-            // Upload image
-            $path = $request->file('image')->storeAs('public/images', $fileNameToStore);
-            $doctor->image = 'storage/images/' . $fileNameToStore;
-        }
-        $doctor->save();
-        $doctors = Role::where('key', 'D')->first();
-        $doctorId = $doctors->id;
-        $role = new UserRole();
-        $role->user_id = $doctor->id;
-        $role->role_id = $doctorId;
-        $role->save();
-        DB::commit();
-        return redirect()->route('doctor.index');
+            $doctor = new User();
+            $doctor->username = $request->username;
+            $doctor->name = $request->name;
+            $doctor->address = $request->address;
+            $doctor->email = $request->email;
+            $doctor->password = Hash::make($request->password);
+            $doctor->telephone = $request->telephone;
+            $doctor->date_birth = Carbon::createFromFormat('d/m/Y', $request->date_of_birth)->format('Y-m-d');
+            $doctor->department_id = $request->department;
+            $doctor->is_active = $request->status == 'active' ? 1 : 0;
+            $doctor->gender = $request->gender == 'male' ? 'male' : 'female';
+            if ($request->hasFile('image')) {
+                $fileNameWithExt = $request->file('image')->hashName();
+                $fileNameWithExt = str_replace(' ', '', $fileNameWithExt);
+                if (strpos($fileNameWithExt, '(') !== false || strpos($fileNameWithExt, ')') !== false) {
+                    $fileNameWithExt = str_replace(['(', ')'], '', $fileNameWithExt);
+                }
+                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+                $extension = $request->file('image')->extension();
+                $fileNameToStore = $fileName . '_' . time() . '.' . $extension;
+                $path = $request->file('image')->storeAs('public/images', $fileNameToStore);
+                $imageHash = hash_file('sha256', storage_path('app/public/images/' . $fileNameToStore));
+
+                if (User::where('hashed_image', $imageHash)->exists()) {
+                    return redirect()->route('doctor.index')->withErrors(['error' => 'Image already exists.']);
+                }
+
+                $doctor->image = 'storage/images/' . $fileNameToStore;
+                $doctor->hashed_image = $imageHash;
+            }
+
+
+            $doctor->save();
+
+            $doctors = Role::where('key', 'D')->first();
+            $doctorId = $doctors->id;
+            $role = new UserRole();
+            $role->user_id = $doctor->id;
+            $role->role_id = $doctorId;
+            $role->save();
+
+            DB::commit();
+            return redirect()->route('doctor.index');
         } catch (\Exception $e) {
             Log::error('Caught exception: ' . $e->getMessage(), ['exception' => $e]);
             DB::rollBack();
-            return response()->json(['error' => 'Something went wrong'], 500);
+            return redirect()->back()->with('error', 'Something went wrong.');
         }
     }
 
