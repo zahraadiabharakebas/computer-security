@@ -7,7 +7,8 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ScheduleController;
-use App\Http\Controllers\SessionExpiredController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\HomeController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -23,7 +24,7 @@ use App\Http\Controllers\SessionExpiredController;
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('home', [HomeController::class, 'index'])->name('home');
 Route::get('/', function () {
     return redirect('login');
 });
@@ -33,4 +34,7 @@ Route::resource('department', DepartmentController::class);
 Route::resource('patient', PatientController::class);
 Route::resource('appointment', AppointmentController::class);
 Route::resource('schedule', ScheduleController::class);
-Route::get('session-expired', [SessionExpiredController::class, 'index']);
+// routes/web.php
+
+Route::get('/get-doctors/{department}', [DoctorController::class,'getDoctors'])->name('get-doctors');
+Route::post('search', [SearchController::class,'search'])->name('search');

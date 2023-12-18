@@ -23,6 +23,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $text = '<script>alert("Hello Saja")</script>';
+        return view('home')->with('results',[])->with('text',$text);
     }
 }

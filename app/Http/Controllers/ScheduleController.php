@@ -28,7 +28,7 @@ class ScheduleController extends Controller
      */
     public function create()
     {
-        $doctor =  Role::where('key', env('doctor'))->first();
+        $doctor =  Role::where('key', 'D')->first();
         $doctorId = $doctor->id ;
         $doctors = User::whereHas('getRoles', function ($query) use ($doctorId) {
             $query->where('role_id', $doctorId);
@@ -84,7 +84,7 @@ class ScheduleController extends Controller
      */
     public function edit(string $id)
     {
-        $doctor =  Role::where('key', env('doctor'))->first();
+        $doctor =  Role::where('key','D')->first();
         $doctorId = $doctor->id ;
         $doctors = User::whereHas('getRoles', function ($query) use ($doctorId) {
             $query->where('role_id', $doctorId);

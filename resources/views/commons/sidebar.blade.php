@@ -5,7 +5,7 @@
                 <li class="menu-title">Main</li>
                 @if(Auth::user()->getRoles->where('key',env('ADMIN'))->first() != null)
                 <li>
-                    <a href="index.html"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
+                    <a href="{{route('home')}}"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
                 </li>
                 @endif
 

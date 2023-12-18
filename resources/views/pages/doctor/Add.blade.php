@@ -19,7 +19,7 @@
                                     <div class="col-sm-12">
                                         <div class="form-group">
                                             <label>User Name</label>
-                                            <input type="text" class="form-control" value="{{old('username')}}" name="username">
+                                            <input type="text" class="form-control" value="{{ old('username') }}" name="username">
                                             @error('username')
                                             <div class="error-msg">{{ $message }}</div>
                                             @enderror

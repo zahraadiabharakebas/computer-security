@@ -21,7 +21,9 @@
                                 <th>Available Days</th>
                                 <th>Available Time</th>
                                 <th>Status</th>
+                                @if(Auth::user()->getRoles->where('key',env('ADMIN'))->first() != null)
                                 <th class="text-right">Action</th>
+                                    @endif
                             </tr>
                             </thead>
                             <tbody>
@@ -47,6 +49,7 @@
                                     </span>
                                     @endif
                                 </td>
+                                @if(Auth::user()->getRoles->where('key',env('ADMIN'))->first() != null)
                                 <td class="text-right">
                                     <div class="dropdown dropdown-action">
                                         <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
@@ -56,6 +59,7 @@
                                         </div>
                                     </div>
                                 </td>
+                                    @endif
                             </tr>
                             <div id="delete_schedule_{{$data->id}}" class="modal fade delete-modal" role="dialog">
                                 <div class="modal-dialog modal-dialog-centered">
